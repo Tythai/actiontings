@@ -1,0 +1,39 @@
+name: Hello World
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  startup:
+    name: Run startup script
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "hello world"
+
+  build:
+    name: Here is my build task
+    runs-on: ubuntu-latest
+    needs: startup
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Comment on PR
+        # The 'gh pr comment' command uses the CLI to post a message.
+        # It requires the two variables defined in 'env' below to work.
+        run: gh pr comment $PR_URL --body "Thanks for your PR. We will review shortly!"
+        
+        env:
+          # 1. GITHUB_TOKEN: 
+          # This is an AUTOMATIC secret created by GitHub for this specific run.
+          # You don't need to add it to Settings > Secrets.
+          # REMINDER: If this fails with "403 Forbidden", you must go to 
+          # Settings -> Actions -> General and set "Workflow permissions" to "Read and write".
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          # 2. PR_URL: 
+          # This pulls the specific web address (URL) of the Pull Request that triggered this.
+          # It tells the 'gh' command EXACTLY where to post the comment.
+          # It is part of the 'github' context object that is always available in PR triggers.
+          PR_URL: ${{ github.event.pull_request.html_url }}
