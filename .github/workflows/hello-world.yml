@@ -1,23 +1,36 @@
-name: Hello World
+name: Hello People Dem
 
 on:
   pull_request:
-    types: [opened]
+    # REMINDER: 'opened' triggers once; 'synchronize' triggers on every push to the PR.
+    types: [opened, synchronize] 
 
 jobs:
   startup:
     name: Run startup script
     runs-on: ubuntu-latest
     steps:
-      - run: echo "hello world"
+      - run: echo "hello world - initiating laboratory sequence"
 
   build:
     name: Here is my build task
     runs-on: ubuntu-latest
-    needs: startup
+    needs: startup # REMINDER: Build job waits for startup to turn green.
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Vite Production Build
+        # REMINDER: This step catches syntax errors (missing semicolons, etc).
+        # It must pass before the PR comment or File Check can run.
+        run: |
+          npm install
+          npm run build
 
       - name: Comment on PR
         # The 'gh pr comment' command uses the CLI to post a message.
@@ -37,6 +50,7 @@ jobs:
           # It tells the 'gh' command EXACTLY where to post the comment.
           # It is part of the 'github' context object that is always available in PR triggers.
           PR_URL: ${{ github.event.pull_request.html_url }}
+          
       - name: Check for Buttons
         # REMINDER: Make sure 'chmod +x' was run on this script in your Ubuntu Server!
         run: ./.github/scripts/checker.sh 

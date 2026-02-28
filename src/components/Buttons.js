@@ -1,8 +1,9 @@
 import React from 'react';
 
 /**
- * REMINDER: This is the file that checker.sh looks for. 
- * If you rename this, update the FILE variable in your YAML!
+ * 1. This file must stay in 'src/components/' for the GitHub Action to find it.
+ * 2. If you change the filename to 'Button.jsx' (singular), you MUST update 
+ * the 'FILE' variable in your .yml workflow.
  */
 const Buttons = () => {
   // REMINDER: React events use camelCase (onClick), not lowercase (onclick).
